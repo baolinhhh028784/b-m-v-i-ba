@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật Ba!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #d32f2f;
+            text-align: center;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 20px 30px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        p { font-size: 1.2rem; margin-bottom: 10px; }
+
+        .emoji-container, .message-container, canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: float 5s linear forwards;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .message {
+            position: absolute;
+            font-size: 20px;
+            color: #d32f2f;
+            animation: messageFloat 8s linear forwards;
+            user-select: none;
+            white-space: nowrap;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        @keyframes messageFloat {
+            0% { transform: translateY(100vh) translateX(0); opacity: 1; }
+            100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
+        }
+
+        .instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .audio-control {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            z-index: 20;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .audio-control:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌷🌷 Chúc Mừng Sinh Nhật Ba! 🌷🌷</h1>
+        <p>Chúc ba luôn mạnh khỏe, hạnh phúc và thành công!</p>
+        <div class="instructions">(Nhấn thử màn hình đi ba 🎆)</div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+    <div class="emoji-container" id="emojiContainer"></div>
+    <div class="message-container" id="messageContainer"></div>
+
+    <!-- Nhạc nền -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_91d6f5f7f5.mp3?filename=happy-birthday-to-you-piano-117169.mp3" type="audio/mpeg">
+    </audio>
+    <button class="audio-control" id="toggleAudio">🔊</button>
+
+    <script>
+        const emojis = ['❤️', '🎂', '🎉', '🎁', '🌸', '🌹', '💐', '✨', '🥳', '🎈'];
+
+        function createEmoji() {
+            const emojiContainer = document.getElementById('emojiContainer');
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.fontSize = (Math.random() * 30 + 20) + 'px';
+            emoji.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            emojiContainer.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 6000);
+        }
+
+        function createMessage() {
+            const messageContainer = document.getElementById('messageContainer');
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = '🌷🌷 Chúc mừng sinh nhật ba 🌷🌷';
+            message.style.left = Math.random() * 100 + 'vw';
+            message.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            messageContainer.appendChild(message);
+            setTimeout(() => message.remove(), 10000);
+        }
+
+        setInterval(createEmoji, 200);
+        setInterval(createMessage, 500);
+
+        document.addEventListener('click', e => {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createEmojiAtPosition(e.clientX, e.clientY), i * 100);
+                createFirework(e.clientX, e.clientY);
+            }
+        });
+
+        function createEmojiAtPosition(x, y) {
+            const emojiContainer = document.getElementById('emojiContainer');
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = x + 'px';
+            emoji.style.top = y + 'px';
+            emoji.style.fontSize = (Math.random() * 30 + 20) + 'px';
+            emoji.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            emojiContainer.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 5000);
+        }
+
+        // ----- Âm thanh -----
+        const bgMusic = document.getElementById('bgMusic');
+        const toggleAudio = document.getElementById('toggleAudio');
+        toggleAudio.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                toggleAudio.textContent = '🔊';
+            } else {
+                bgMusic.pause();
+                toggleAudio.textContent = '🔈';
+            }
+        });
+
+        // ----- Pháo hoa -----
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        let particles = [];
+        function random(min, max) { return Math.random() * (max - min) + min; }
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                    radius: random(2, 4),
+                    alpha: 1,
+                    speedX: random(-5, 5),
+                    speedY: random(-5, 5)
+                });
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.alpha -= 0.02;
+                if (p.alpha <= 0) particles.splice(i, 1);
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Hiển thị pháo hoa tự động ở cuối màn hình
+        setInterval(() => {
+            const x = Math.random() * window.innerWidth;
+            const y = window.innerHeight - random(50, 150);
+            createFirework(x, y);
+        }, 800);
+    </script>
+</body>
+</html>
